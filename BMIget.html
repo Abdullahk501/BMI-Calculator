@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI CALCULATOR</title>
+
+    <style>
+      *{
+        margin: 0;
+        padding: 0;
+      }
+      
+      body{
+        background-color: #e0dede;
+      }
+
+      .form{
+        box-sizing: border-box;
+        height: 480px;
+        width: 350px;
+        padding-left: 40px;
+        margin: auto ;
+        margin-top: 130px;
+        padding-top: 90px;
+        border: none ;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: white;
+        box-shadow: 1px 1px 1px 1px;
+      }
+
+      
+      h1{
+        font-size: 32px;
+        font-weight: 500;
+      }
+
+      h2{
+        font-size: 16px;
+        font-weight: 100;
+        margin-left: 0px;
+      }
+      
+      h3{
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      button{
+        width: 250px;
+        height: 26px;
+        margin-top: 20px;
+        background-color: orange;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+
+      #para1{
+        width: 45px;
+        height: 25px;
+        display: inline-block;
+        align-items: center;
+        border: none;
+        box-sizing: border-box;
+        background-color: #e0dede;
+        outline: none;
+        text-align: center;
+        padding-top: 4px;
+      }
+      
+      #para2{
+        width: 45px;
+        height: 25px;
+        display: inline-block;
+        align-items: center;
+        border: none;
+        box-sizing: border-box;
+        background-color: #e0dede;
+        outline: none;
+        text-align: center;
+        padding-top: 4px;
+      }
+
+      input[type="range"]{
+        height: 1px;
+        width: 250px;
+        background-color: grey;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb{
+        appearance: none;
+        -webkit-appearance: none;
+
+        height: 20px;
+        width: 20px;
+        background-color: white;
+        border: 3px solid orange;
+        border-radius: 50%;
+      }
+
+
+
+    </style>
+</head>
+<body>
+  <div class="form">
+    <h1>Calculate Your BMI</h1><br>
+    
+    <div class="slider">
+        <input type="range" min="0" max="150" value="0" onchange="rangeSlide(this.value)" onmousemove="rangeSlide(this.value)" name="slide1" id="slid1">
+    </div><br>
+    <h2>WEIGHT: <span id="para1" contenteditable="true">0</span> KG</h2><br>
+
+
+    <div class="slider">
+    <input type="range" min="0.0" max="7.5" step="0.1" value="0" onchange="rangeSlide1(this.value)" onmousemove="rangeSlide1(this.value)" name="slide2" id="slid2"> 
+    </div><br>
+    <h2>HEIGHT: <span id="para2" contenteditable="true">0</span> FT </h2><br>
+
+    <button type="submit" name="sub" id="btn" onclick="fetchC()">CALCULATE</button><br><br><br> 
+
+    <h3>Your BMI: <span id="para"></span></h3>
+    
+  </div>
+
+<script type="text/javascript">
+
+    const slider = document.getElementById("slid1");
+    const para = document.getElementById("para1");
+    
+    const slider1 = document.getElementById("slid2");
+    const paraa = document.getElementById("para2");
+
+    function rangeSlide(value){
+        document.getElementById("para1").innerHTML=value;
+        para.innerText = value;
+
+           para.addEventListener("input", () => {
+            let value = parseFloat(para.innerText); 
+            if (!isNaN(value) && value >= slider.min && value <= slider.max) {
+                slider.value = value; 
+            }
+        });
+
+        para.addEventListener("keydown", (e) => {
+            if (!/[0-9]/.test(e.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    function rangeSlide1(value){
+        document.getElementById("para2").innerHTML=value;
+        if (parseFloat(paraa.innerText) !== parseFloat(value)) {
+        paraa.innerText = value;
+        }
+
+        paraa.addEventListener("input", () => {
+            let value = parseFloat(paraa.innerText);
+            if (!isNaN(value) && value >= slider1.min && value <= slider1.max) {
+                slider1.value = value;
+            }
+        });
+
+        para.addEventListener("keydown", (e) => {
+            if (!/[0-9.]/.test(e.key) && !["Backspace", "Delete", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (e.key === "." && paraa.innerText.includes(".")) {
+                e.preventDefault();
+            }
+        });
+
+         paraa.addEventListener("blur", () => {
+            let value = parseFloat(paraa.innerText);
+            if (isNaN(value) || value < slider1.min || value > slider1.max) {
+                paraa.innerText = slider1.value;
+            } else {
+                paraa.innerText = editedValue;
+            }
+        });
+
+
+    }
+
+    function fetchC(){
+      const weight = document.getElementById("slid1").value;
+      const height = document.getElementById("slid2").value;
+      
+      const xhr = new XMLHttpRequest();
+
+      xhr.open("GET", `BMI.php?slide1=${weight}&slide2=${height}`, true);
+
+      xhr.onload = function () {
+        if(xhr.status === 200){
+           document.getElementById("para").innerHTML = xhr.responseText;
+        }
+      }
+      xhr.send();
+    }
+
+</script>
+</body>
+</html>
+
